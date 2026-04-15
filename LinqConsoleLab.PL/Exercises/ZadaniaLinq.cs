@@ -1,5 +1,4 @@
 using LinqConsoleLab.PL.Data;
-using LinqConsoleLab.PL.Models;
 
 namespace LinqConsoleLab.PL.Exercises;
 
