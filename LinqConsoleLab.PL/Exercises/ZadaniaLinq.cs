@@ -243,7 +243,16 @@ public sealed class ZadaniaLinq
     /// </summary>
     public IEnumerable<string> Zadanie13_GrupowanieZapisowWedlugPrzedmiotu()
     {
-        throw Niezaimplementowano(nameof(Zadanie13_GrupowanieZapisowWedlugPrzedmiotu));
+        return DaneUczelni.Zapisy
+            
+            .Join(
+                    DaneUczelni.Przedmioty,
+                    zapis => zapis.PrzedmiotId,
+                    przedmiot => przedmiot.Id,
+                    (zapis, przedmiot) => przedmiot.Nazwa)
+                .GroupBy(nazwaPrzedmiotu => nazwaPrzedmiotu)
+                .OrderBy(grupa => grupa.Key)
+                .Select(grupa => $"{grupa.Key} | liczba zapisów: {grupa.Count()}");
     }
 
     /// <summary>
@@ -260,7 +269,20 @@ public sealed class ZadaniaLinq
     /// </summary>
     public IEnumerable<string> Zadanie14_SredniaOcenaNaPrzedmiot()
     {
-        throw Niezaimplementowano(nameof(Zadanie14_SredniaOcenaNaPrzedmiot));
+        return DaneUczelni.Zapisy
+            .Where(z => z.OcenaKoncowa.HasValue)
+            .Join(
+                DaneUczelni.Przedmioty,
+                zapis => zapis.PrzedmiotId,
+                przedmiot => przedmiot.Id,
+                (zapis, przedmiot) => new
+                {
+                    przedmiot.Nazwa,
+                    Ocena = zapis.OcenaKoncowa!.Value
+                })
+            .GroupBy(x => x.Nazwa)
+            .OrderBy(grupa => grupa.Key)
+            .Select(grupa => $"{grupa.Key} | średnia ocena: {grupa.Average(x => x.Ocena):0.00}");
     }
 
     /// <summary>
@@ -276,7 +298,13 @@ public sealed class ZadaniaLinq
     /// </summary>
     public IEnumerable<string> Zadanie15_ProwadzacyILiczbaPrzedmiotow()
     {
-        throw Niezaimplementowano(nameof(Zadanie15_ProwadzacyILiczbaPrzedmiotow));
+        return DaneUczelni.Prowadzacy
+            .GroupJoin(
+                DaneUczelni.Przedmioty,
+                prowadzacy => prowadzacy.Id,
+                przedmiot => przedmiot.ProwadzacyId,
+                (prowadzacy, przedmioty) => $"{prowadzacy.Imie} {prowadzacy.Nazwisko} | liczba przedmiotów: {przedmioty.Count()}")
+            .OrderBy(wynik => wynik);
     }
 
     /// <summary>
@@ -293,7 +321,19 @@ public sealed class ZadaniaLinq
     /// </summary>
     public IEnumerable<string> Zadanie16_NajwyzszaOcenaKazdegoStudenta()
     {
-        throw Niezaimplementowano(nameof(Zadanie16_NajwyzszaOcenaKazdegoStudenta));
+        return DaneUczelni.Studenci
+            .Join(
+                DaneUczelni.Zapisy.Where(z => z.OcenaKoncowa.HasValue),
+                student => student.Id,
+                zapis => zapis.StudentId,
+                (student, zapis) => new
+                {
+                    ImieNazwisko = $"{student.Imie} {student.Nazwisko}",
+                    Ocena = zapis.OcenaKoncowa!.Value
+                })
+            .GroupBy(x => x.ImieNazwisko)
+            .OrderBy(grupa => grupa.Key)
+            .Select(grupa => $"{grupa.Key} | najwyższa ocena: {grupa.Max(x => x.Ocena):0.0}");
     }
 
     /// <summary>
