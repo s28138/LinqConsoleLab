@@ -66,6 +66,7 @@ public sealed class ZadaniaLinq
     /// </summary>
     public IEnumerable<string> Zadanie04_PierwszyPrzedmiotAnalityczny()
     {
+        
         var przedmiot = DaneUczelni.Przedmioty
                 .FirstOrDefault(p => p.Kategoria == "Analytics");
 
